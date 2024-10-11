@@ -7,8 +7,6 @@
 ## Project Overview
 This project implements an AI-powered Email Management System for Head of Departments (HODs) at a university. The system classifies incoming emails into different categories and handles them accordingly, streamlining the email management process.
 
-Here's how you can structure the section in your `.md` file to include a link to the demo video hosted on your OneDrive:
-
 ---
 
 ### Working Demo
@@ -67,7 +65,6 @@ You can download the pretrained models for email classification from the followi
      ```
    - The terminal will display various localhost and LAN addresses where you can access the Streamlit-hosted app.
 
-Here's how you can structure your `.md` documentation based on the Dockerfile you provided, following the style you mentioned:
 
 ---
 
