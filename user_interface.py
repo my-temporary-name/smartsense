@@ -1,8 +1,16 @@
 import streamlit as st
 import torch
 import pickle
+import faiss
 from transformers import BertTokenizer, BertForSequenceClassification
 import torch.nn as nn
+import json
+import random
+import torch
+import numpy as np
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 # Define LSTM Model
 class EmailClassificationModel(nn.Module):
@@ -61,10 +69,84 @@ def bert_predict(email, bert_model, bert_tokenizer):
         preds = torch.argmax(outputs.logits, dim=1).item()
     return preds
 
-# Main function
-# Main function
+
+
+
+
+# Load FLAN-T5 model and tokenizer
+flan_model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-large")
+flan_tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-large")
+
+# Function to load responses from a text file
+def load_responses_from_txt(file_path):
+    with open(file_path, 'r') as f:
+        responses = f.readlines()
+    # Strip newline characters and return as a list
+    return [response.strip() for response in responses]
+
+# Load research and student responses from text files
+research_responses = load_responses_from_txt('data/research.txt')
+student_responses = load_responses_from_txt('data/student.txt')
+
+# Combine responses for FAISS index
+all_responses = {
+    "research": research_responses,
+    "student": student_responses
+}
+
+# Create FAISS index
+def create_faiss_index(responses):
+    embeddings = []
+    for category in responses:
+        for response in responses[category]:
+            input_ids = flan_tokenizer(response, return_tensors='pt').input_ids
+            with torch.no_grad():
+                embedding = flan_model.encoder(input_ids).last_hidden_state.mean(dim=1).numpy()
+                embeddings.append((embedding, response))
+    
+    # Convert to numpy array for FAISS
+    embedding_matrix = np.array([embedding[0] for embedding in embeddings]).squeeze()
+    index = faiss.IndexFlatL2(embedding_matrix.shape[1])  # Use L2 distance
+    index.add(embedding_matrix.astype('float32'))
+    
+    return index, embeddings
+
+# Create the FAISS index for all responses
+faiss_index, embeddings_with_responses = create_faiss_index(all_responses)
+
+# Define a function to get the nearest response from FAISS
+def get_nearest_response(query):
+    input_ids = flan_tokenizer(query, return_tensors='pt').input_ids
+    with torch.no_grad():
+        query_embedding = flan_model.encoder(input_ids).last_hidden_state.mean(dim=1).numpy()
+    
+    distances, indices = faiss_index.search(query_embedding.astype('float32'), k=1)
+    return [embeddings_with_responses[idx][1] for idx in indices[0]]
+
+# Define a function to add header and footer for student and research emails
+def format_response_with_header_footer(response, department="Department of [Something]"):
+    header = "\nDear Sir/Ma'am,"
+    footer = f"Regards,\n{department}"
+    return f"{header}\n\n{response}\n\n{footer}"
+
+# Define a professional response for corporate emails
+def corporate_response():
+    return "This is a sensitive email and will take time and personal attention to respond. Please bear with us."
+
+# Define a function to get the nearest response and format it
+def get_formatted_response(query, predicted_category):
+    # If it's a corporate email, return a professional response
+    if predicted_category.lower() == 'corporate':
+        return corporate_response()
+    
+    # For student or research emails, get the nearest response and add header/footer
+    nearest_response = get_nearest_response(query)
+    department = "Department of [Something]"  # You can customize this or make it dynamic
+    return format_response_with_header_footer(nearest_response, department)
+
+# Main function for Streamlit app
 def main():
-    st.title("Email Classification System")
+    st.title("Email Classification and Response System")
 
     # Load models
     lstm_model, lstm_tokenizer = load_lstm_model()
@@ -73,7 +155,7 @@ def main():
     # Choose model
     model_choice = st.radio(
         "Choose a model:",
-        ('BERT', 'LSTM', 'Both')
+        ('BERT', 'LSTM')
     )
 
     # Input: predefined examples or user input
@@ -99,42 +181,44 @@ def main():
             "Is there any guidance available for the upcoming exam?"
         ],
         "Corporate Email": [
-            "We have positions for 6 chemistry students interested in industrial applications.",
-            "We have full-time positions and internships available in HR consulting.",
+            "We are interested in collaborating with your university on an AI research project.",
+            "We would like to offer internships to your top students in data science.",
             "Our company is interested in sponsoring a hackathon at your university.",
             "We are looking to organize a workshop on advanced machine learning techniques.",
-            "Can we discuss a potential startup for future projects in BioTechnology?"
+            "Can we discuss a potential partnership for future projects in AI research?"
         ]
     }
 
     # Predefined Examples
     if email_choice == 'Predefined Examples':
-        # Select category first
         email_category = st.selectbox("Choose an email category:", list(predefined_examples.keys()))
-        
-        # Select one of the five examples from the chosen category
         example_choice = st.selectbox(f"Choose a {email_category} example:", predefined_examples[email_category])
-        email_text = example_choice  # Selected example text
-        
-        st.write(f"Selected email: {email_text}")  # Display selected email
-
+        email_text = example_choice
+        st.write(f"Selected email: {email_text}")
     else:
-        email_text = st.text_area("Enter the email text:")  # Custom input from user
+        email_text = st.text_area("Enter the email text:")
 
     # When "Classify Email" button is pressed
     if st.button("Classify Email"):
         categories = {0: 'Student', 1: 'Corporate', 2: 'Research'}
 
         # BERT Prediction
-        if model_choice == 'BERT' or model_choice == 'Both':
+        if model_choice == 'BERT':
             bert_pred = bert_predict(email_text, bert_model, bert_tokenizer)
-            st.write(f"BERT Prediction: {categories[bert_pred]}")
+            predicted_category = categories[bert_pred]
+            st.write(f"BERT Prediction: {predicted_category}")
 
         # LSTM Prediction
-        if model_choice == 'LSTM' or model_choice == 'Both':
+        if model_choice == 'LSTM':
             lstm_pred = lstm_predict(email_text, lstm_model, lstm_tokenizer)
-            st.write(f"LSTM Prediction: {categories[lstm_pred]}")
+            predicted_category = categories[lstm_pred]
+            st.write(f"LSTM Prediction: {predicted_category}")
 
+        # st.write(f"Predicted Category: {predicted_category}")
+
+        # Retrieve and display the formatted response based on the predicted category
+        response = get_formatted_response(email_text, predicted_category)
+        st.write(f"Suggested Response:\n{response}")
 
 if __name__ == "__main__":
     main()
