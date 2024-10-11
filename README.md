@@ -52,6 +52,33 @@ You can download the pretrained models for email classification from the followi
      ```
    - The terminal will display various localhost and LAN addresses where you can access the Streamlit-hosted app.
 
+Here's how you can structure your `.md` documentation based on the Dockerfile you provided, following the style you mentioned:
+
+---
+
+### Running the Streamlit Application in Docker
+
+1. **Build the Docker image**  
+   In the project repository directory, run the following command to build the Docker image:
+   ```bash
+   docker build -t streamlit_app .
+   ```
+
+2. **Run the Docker container in interactive mode**  
+   Once the image is built, you can run the container in interactive mode, exposing the necessary port and mounting the current directory for live updates:
+   ```bash
+   docker run -d -p 8501:8501 streamlit_app
+   ```
+
+3. **Access the Streamlit app**  
+   Once the Streamlit server starts, you can view the app by navigating to the following URL in your browser:
+   ```
+   http://localhost:8501
+   ```
+
+---
+
+
 
 ## Dataset Information
 - The dataset contains 632 synthetically generated emails, evenly distributed across three categories: **student**, **research**, and **corporate**.
