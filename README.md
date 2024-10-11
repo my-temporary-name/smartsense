@@ -8,7 +8,7 @@
 This project implements an AI-powered Email Management System for Head of Departments (HODs) at a university. The system classifies incoming emails into different categories and handles them accordingly, streamlining the email management process.
 
 ## Project Flowchart
-![flow chart](mermaid.png)
+![flow chart](image/mermaid.png)
 ## Model Selection and Approach
 
 ### Models Implemented
@@ -21,6 +21,36 @@ This project implements an AI-powered Email Management System for Head of Depart
 2. **Efficient and Effective**: The base model (12 layers, 110M parameters) balances strong performance with manageable computational costs, making it suitable for most classification tasks.
 3. **Fine-Tuning Capability**: BERT can be fine-tuned easily on specific tasks like email classification, allowing the model to adapt to nuances in different email types.
 4. **Uncased Model**: Using the uncased version simplifies the model by ignoring case distinctions, which aren’t critical for email classification, and reduces vocabulary size.
+
+## Download Pretrained Models
+
+You can download the pretrained models for email classification from the following links:
+
+- [Fine-tuned BERT Model](https://iitgnacin-my.sharepoint.com/:f:/g/personal/22270001_iitgn_ac_in/EsOUv9DvsbNFh7dCS_k3QM0BG86TBsEuosSBW3nYz10fyA?e=IpICoI)  
+  Download the fine-tuned BERT model used for classifying emails into student, research, and corporate categories.
+
+- [LSTM Model](https://iitgnacin-my.sharepoint.com/:f:/g/personal/22270001_iitgn_ac_in/Ei7RTLM3FSJDnQ5-6uQuEiwBk_YrYh4W6qnO7FOhRdqvvg?e=AvkBwv)  
+  Download the custom LSTM model trained for for classifying emails into student, research, and corporate categories.
+
+### Steps to Set Up the Environment
+
+1. **Replace Model Files**:
+   - Download the all files for the respective models and place them in the respective folders:
+     - For the BERT model, replace the contents of the `fine-tuned-bert-email` folder.
+     - For the LSTM model, place the files in the `LSTM_model_save` folder.
+
+2. **Install Requirements**:
+   - Install the required packages using:
+     ```bash
+     pip install -r requirements.txt
+     ```
+
+3. **Run the Streamlit App**:
+   - Execute the Streamlit app wrapper with the following command:
+     ```bash
+     streamlit run user_interface.py
+     ```
+   - The terminal will display various localhost and LAN addresses where you can access the Streamlit-hosted app.
 
 
 ## Dataset Information
@@ -53,5 +83,23 @@ This project implements an AI-powered Email Management System for Head of Depart
 | Weighted Avg | 0.95    | 0.95   | 0.95     | 127     |
 
 
+## Streamlit UI Showcase
+
+Here are the screenshots showcasing the process of using the Streamlit UI for email classification and response generation:
+
+### 1. Home Screen
+![Home Screen](image/first.png)
+
+### 2. Research
+![Model Selection](image/Research.png)
+
+### 3. Student
+![Email Input](image/student.png)
+
+### 4. Corporate
+![Classification Results](image/corporate.png)
+
+### 5. Custom Input
+![Generated Response](image/custom.png)
 
 

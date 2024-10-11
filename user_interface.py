@@ -1,15 +1,13 @@
-import streamlit as st
 import torch
-import pickle
 import faiss
-from transformers import BertTokenizer, BertForSequenceClassification
-import torch.nn as nn
-import json
-import random
-import torch
+import pickle
 import numpy as np
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+import streamlit as st
+import torch.nn as nn
+
 from sklearn.metrics.pairwise import cosine_similarity
+from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
 
 # Define LSTM Model
@@ -167,22 +165,22 @@ def main():
     # Provide 5 examples for each category
     predefined_examples = {
         "Research Email": [
-            "I would like to submit my findings on quantum computing to your department for review.",
+            "Could you share the data from your latest experiment for cross-validation?",
+            "I would like to request datasets for the research project we discussed.",
             "Our team is working on a new AI model and we would like to collaborate with your lab.",
             "I need access to the recent research papers in machine learning. Can you help?",
-            "We are conducting a study on renewable energy, and your expertise would be invaluable.",
-            "Could you share the data from your latest experiment for cross-validation?"
+            "I would like to know the funding staus for the previous project is approved or not?",
         ],
         "Student Email": [
             "Can you please provide the schedule for the upcoming semester?",
-            "I am having trouble registering for my classes, can you assist?",
-            "I need help with my final project submission deadline.",
+            "I am planning to attend annual Student Research Symposium. Can you provide more details?",
+            "Is academic integrity workshop is mandatory for all students?",
             "Could you explain the prerequisites for the Data Science course?",
-            "Is there any guidance available for the upcoming exam?"
+            "Can you share details about annual alumni mentorship program?"
         ],
         "Corporate Email": [
             "We are interested in collaborating with your university on an AI research project.",
-            "We would like to offer internships to your top students in data science.",
+            "We would like to offer industrial internships to your top students in data science.",
             "Our company is interested in sponsoring a hackathon at your university.",
             "We are looking to organize a workshop on advanced machine learning techniques.",
             "Can we discuss a potential partnership for future projects in AI research?"

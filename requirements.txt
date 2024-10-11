@@ -1,0 +1,10 @@
+nltk
+torch==2.1.0
+pandas
+seaborn
+matplotlib
+wordcloud
+scikit-learn
+transformers
+faiss-cpu
+streamlit
