@@ -7,6 +7,21 @@
 ## Project Overview
 This project implements an AI-powered Email Management System for Head of Departments (HODs) at a university. The system classifies incoming emails into different categories and handles them accordingly, streamlining the email management process.
 
+Here's how you can structure the section in your `.md` file to include a link to the demo video hosted on your OneDrive:
+
+---
+
+### Working Demo
+
+You can watch a working demo of the Streamlit app in action by following the link below:
+
+[![Streamlit App Demo](https://img.shields.io/badge/Streamlit-Demo-red)](https://iitgnacin-my.sharepoint.com/:f:/g/personal/22270001_iitgn_ac_in/EkLUSGI-pIZBri8iN7FUyqYBeZ5v8dhznDHY-qK_XjiCnQ?e=Splrdd)
+
+Simply click the badge above to view the recorded demonstration of the app functionality.
+
+---
+
+
 ## Project Flowchart
 ![flow chart](image/mermaid.png)
 ## Model Selection and Approach
